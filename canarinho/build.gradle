@@ -1,6 +1,8 @@
 apply plugin: 'com.android.library'
+apply plugin: 'maven-publish'
 apply from: "$rootDir/tools/linters/linters.gradle"
-apply from: "$rootDir/tools/publish.gradle"
+//apply from: "$rootDir/tools/publish.gradle"
+
 
 
 ext {
@@ -22,6 +24,22 @@ android {
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 31
+    }
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                // Publica o AAR "release"
+                from components.release
+
+                // Opcional (mas útil para manter o nome estável)
+                groupId = project.findProperty("group") ?: publishedGroupId
+                artifactId = artifact
+                version = project.findProperty("version") ?: libraryVersion
+            }
+        }
     }
 }
 
